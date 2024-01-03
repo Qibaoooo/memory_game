@@ -18,12 +18,12 @@
         tools:layout_editor_absoluteX="0dp">
 
         <EditText
+            android:autofillHints="input your url here..."
             android:id="@+id/edit_url"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="6"
-            android:inputType="textWebEmailAddress"
-            android:text="input your url here..."
+            android:inputType="textUri"
             />
 
         <Button
