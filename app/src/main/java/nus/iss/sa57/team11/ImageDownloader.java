@@ -1,11 +1,6 @@
 package nus.iss.sa57.team11;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.util.Log;
-import android.widget.ImageView;
-import android.widget.TableLayout;
-import android.widget.TableRow;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -37,7 +32,7 @@ public class ImageDownloader {
             for (int i = 0; i < 5; i++) {
                 for (int j = 0; j < 4; j++) {
                     String url = img_urls.get(4 * i + j);
-                    File destFile = new File(dir, url);
+                    File destFile = new File(dir, url.substring(url.lastIndexOf('/') + 1));
                     downloadImage(url, destFile);
                 }
             }
@@ -51,7 +46,9 @@ public class ImageDownloader {
 
     protected boolean downloadImage(String imgURL, File destFile) {
         try {
-            URL url = new URL(imgURL);
+
+            URL url2 = new URL(imgURL);
+            URL url = new URL("https://p4.wallpaperbetter.com/wallpaper/291/663/679/stones-background-stones-spa-wallpaper-preview.jpg");
             URLConnection conn = url.openConnection();
 
             InputStream in = conn.getInputStream();

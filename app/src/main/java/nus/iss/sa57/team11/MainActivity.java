@@ -2,6 +2,8 @@ package nus.iss.sa57.team11;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -10,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 
@@ -52,6 +55,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             for (int j = 0; j < 4; j++) {
                 ImageView holder = new ImageView(this);
                 holder.setImageResource(R.drawable.ic_launcher_background);
+                TableRow.LayoutParams params = new TableRow.LayoutParams(
+                        TableRow.LayoutParams.WRAP_CONTENT,
+                        TableRow.LayoutParams.WRAP_CONTENT,
+                        1.0f
+                );
+                holder.setScaleType(ImageView.ScaleType.MATRIX);
+                holder.setLayoutParams(params);
                 tr.addView(holder);
             }
             imgTable.addView(tr);
@@ -73,7 +83,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         @Override
                         public void run() {
                             File[] files = externalFilesDir.listFiles();
-
+                            for (int i = 0; i < 5; i++) {
+                                for (int j = 0; j < 4; j++) {
+                                    TableRow tr = (TableRow) imgTable.getChildAt(i);
+                                    ImageView iv = (ImageView) tr.getChildAt(j);
+                                    Bitmap bitmap = BitmapFactory.decodeFile(files[i * 4 + j].getAbsolutePath());
+                                    iv.setImageBitmap(bitmap);
+                                }
+                            }
                             Log.d("debug", "here");
                         }
                     });
