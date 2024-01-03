@@ -18,7 +18,7 @@
         tools:layout_editor_absoluteX="0dp">
 
         <EditText
-            android:autofillHints="input your url here..."
+            android:hint="@string/url_hint"
             android:id="@+id/edit_url"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -31,7 +31,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Fetch"></Button>
+            android:text="@string/btn_fetch"></Button>
     </LinearLayout>
 
     <TableLayout

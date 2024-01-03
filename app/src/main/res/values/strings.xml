@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">memory_game</string>
+    <string name="btn_fetch">Fetch</string>
+    <string name="url_hint">input your url here...</string>
 </resources>
