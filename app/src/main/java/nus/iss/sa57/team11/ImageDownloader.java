@@ -11,6 +11,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,8 +22,8 @@ public class ImageDownloader {
             Document doc = Jsoup.connect(imgURL).get();
             List<Element> imgs = doc.getElementsByTag("img");
             List<String> img_urls = imgs.stream()
-                    .map(e -> e.absUrl("src"))
-                    .filter(s -> s.endsWith("jpg"))
+                    .map(e -> e.absUrl("data-src"))
+                    .filter(s -> s.endsWith("jpg") || s.endsWith("png")|| s.endsWith("jpeg") )
                     .collect(Collectors.toList());
 
             if (img_urls.size() < 20) {
@@ -47,8 +48,10 @@ public class ImageDownloader {
     protected boolean downloadImage(String imgURL, File destFile) {
         try {
 
-            URL url2 = new URL(imgURL);
-            URL url = new URL("https://p4.wallpaperbetter.com/wallpaper/291/663/679/stones-background-stones-spa-wallpaper-preview.jpg");
+            URL url = new URL(imgURL);
+            // for testing
+            // URL url2 = new URL("https://p4.wallpaperbetter.com/wallpaper/291/663/679/stones-background-stones-spa-wallpaper-preview.jpg");
+
             URLConnection conn = url.openConnection();
 
             InputStream in = conn.getInputStream();

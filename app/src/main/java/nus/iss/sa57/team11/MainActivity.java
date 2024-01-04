@@ -21,7 +21,7 @@ import java.io.File;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     protected Button fetch_btn;
-    private final String DEFAULT_URL = "https://stocksnap.io/";
+    private final String DEFAULT_URL = "https://www.wallpaperbetter.com/es/search?q=cat";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,11 +56,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 ImageView holder = new ImageView(this);
                 holder.setImageResource(R.drawable.ic_launcher_background);
                 TableRow.LayoutParams params = new TableRow.LayoutParams(
-                        TableRow.LayoutParams.WRAP_CONTENT,
-                        TableRow.LayoutParams.WRAP_CONTENT,
+                        TableRow.LayoutParams.MATCH_PARENT,
+                        TableRow.LayoutParams.MATCH_PARENT,
                         1.0f
                 );
-                holder.setScaleType(ImageView.ScaleType.MATRIX);
+                holder.setScaleType(ImageView.ScaleType.FIT_XY);
                 holder.setLayoutParams(params);
                 tr.addView(holder);
             }
@@ -78,6 +78,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 TableLayout imgTable = findViewById(R.id.img_table);
                 ImageDownloader imgDL = new ImageDownloader();
                 File externalFilesDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+                for (File f:externalFilesDir.listFiles()
+                     ) {
+                    f.delete();
+                }
                 if (imgDL.downloadAllImages(imgURL, externalFilesDir)) {
                     runOnUiThread(new Runnable() {
                         @Override
