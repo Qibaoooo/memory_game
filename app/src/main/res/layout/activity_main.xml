@@ -23,15 +23,16 @@
 
                 <EditText
                     android:id="@+id/edit_url"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="6"
+                    android:maxWidth="100dp"
+                    android:layout_weight="2"
                     android:hint="@string/url_hint"
                     android:inputType="textUri" />
 
                 <Button
                     android:id="@+id/fetch_btn"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/btn_fetch"></Button>
