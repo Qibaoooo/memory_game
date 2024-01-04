@@ -9,6 +9,7 @@ import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowMetrics;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -56,12 +57,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 ImageView holder = new ImageView(this);
                 holder.setImageResource(R.drawable.ic_launcher_background);
                 TableRow.LayoutParams params = new TableRow.LayoutParams(
-                        TableRow.LayoutParams.MATCH_PARENT,
-                        TableRow.LayoutParams.MATCH_PARENT,
+                        TableRow.LayoutParams.WRAP_CONTENT,
+                        TableRow.LayoutParams.WRAP_CONTENT,
                         1.0f
                 );
-                holder.setScaleType(ImageView.ScaleType.FIT_XY);
                 holder.setLayoutParams(params);
+
+                holder.getLayoutParams().height = 400; //can change the size according to you requirements
+                holder.requestLayout();
+                holder.setScaleType(ImageView.ScaleType.FIT_XY);
+
                 tr.addView(holder);
             }
             imgTable.addView(tr);
