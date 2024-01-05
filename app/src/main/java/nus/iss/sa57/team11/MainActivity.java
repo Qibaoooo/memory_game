@@ -31,7 +31,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private List<String> allImgUrls;
     private List<ImageView> imageViews;
     private List<ImageView> selectedImageViews;
-    private int selectedImageCount;
 
 
     @Override
