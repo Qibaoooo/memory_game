@@ -53,8 +53,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (v.getId() == R.id.fetch_btn) {
             onClickFetchButton();
         } else if (v.getId() == R.id.game_btn) {
-            Intent intent = new Intent(this, GameActivity.class);
-            startActivity(intent);
+            if(this.selectedImageViews.size() == 6) {
+                Intent intent = new Intent(this, GameActivity.class);
+                List<String> selected = new ArrayList<>();
+                for (ImageView i : selectedImageViews){
+                    selected.add("img-"+i.getId());
+                }
+                intent.putStringArrayListExtra("imgList",new ArrayList<>(selected));
+                startActivity(intent);
+            }
         } else {
             onClickImage((ImageView) v);
         }
@@ -226,6 +233,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     ImageView iv = (ImageView) tr.getChildAt(j);
                     Bitmap bitmap = BitmapFactory.decodeFile(destFile.getAbsolutePath());
                     iv.setImageBitmap(bitmap);
+                    iv.setId(i*4+j);
                     // progress bar update
                     ProgressBar pb = findViewById(R.id.download_bar);
                     pb.incrementProgressBy(100 / 20); // 20 total imgs
@@ -233,5 +241,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }).start();
     }
+
 
 }
