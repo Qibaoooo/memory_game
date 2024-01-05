@@ -2,6 +2,7 @@ package nus.iss.sa57.team11;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -78,20 +79,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     protected void startDownloadImage(String imgURL) {
         // clean folder
-        TableLayout imgTable = findViewById(R.id.img_table);
         File externalFilesDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        for (File f : externalFilesDir.listFiles()
-        ) {
-            f.delete();
+        File[] files = externalFilesDir.listFiles();
+        if (files != null) {
+            for (File f : files
+            ) {
+                f.delete();
+            }
         }
-
-        // downloading start
         /*
-        * Here I used a AsyncTask task to do the download, because
-        * we can't open up internet connections on the UI thread.
-        * This is the stackoverflow answer I referred to:
-        * https://stackoverflow.com/questions/12575068/how-to-get-the-result-of-onpostexecute-to-main-activity-because-asynctask-is-a
-        * */
+         * ### Downloading Start ###
+         * Here I used a AsyncTask task to do the downloading, because
+         * we can't open up internet connections on the UI thread directly.
+         * This is the stackoverflow answer I referred to:
+         * https://stackoverflow.com/questions/12575068/how-to-get-the-result-of-onpostexecute-to-main-activity-because-asynctask-is-a
+         * */
         GetIndividualImageUrlsTask task = new GetIndividualImageUrlsTask();
         task.delegate = this;
         task.execute(imgURL);
@@ -100,31 +102,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void processFinish(List<String> output) {
         /*
-        * Save the output (a list of img urls) to the class variable allImgUrls.
-        * For now it has no usage yet but later we might need it.
-        * */
+         * Save the output (a list of img urls) to the class variable allImgUrls.
+         * For now it has no usage yet but later we might need it.
+         * */
         allImgUrls = output;
     }
 
-    private  class GetIndividualImageUrlsTask extends AsyncTask<String, Void, List<String>> {
+    @SuppressLint("StaticFieldLeak")
+    private class GetIndividualImageUrlsTask extends AsyncTask<String, Void, List<String>> {
         public AsyncResponse delegate = null;
 
         @Override
         protected List<String> doInBackground(String... urls) {
             ImageDownloader imgDL = new ImageDownloader();
-            List<String> imgUrls = imgDL.getIndividualImageUrls(urls[0]);
-            return imgUrls;
+            return imgDL.getIndividualImageUrls(urls[0]);
         }
 
         protected void onPostExecute(List<String> result) {
             delegate.processFinish(result);
             File externalFilesDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
             /*
-            * Here we have gotten 20 img urls.
-            * Now we loop around the 20 img, after downloading each one,
-            * we update UI.
-            * The 20 downloads are executed in parallel.
-            * */
+             * Here we have gotten 20 img urls.
+             * Now we loop around the 20 img, after downloading each one,
+             * we update UI.
+             * The 20 downloads are executed in parallel.
+             * */
             for (int i = 0; i < 5; i++) {
                 for (int j = 0; j < 4; j++) {
                     downloadImageAndUpdateUI(externalFilesDir, result, i, j);
@@ -136,22 +138,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void downloadImageAndUpdateUI(File externalFilesDir, List<String> allImageUrls, int i, int j) {
         ImageDownloader imgDL = new ImageDownloader();
         String url = allImageUrls.get(i * 4 + j);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                File destFile = new File(externalFilesDir, url.substring(url.lastIndexOf('/') + 1));
-                TableLayout imgTable = findViewById(R.id.img_table);
-                if (imgDL.downloadImage(url, destFile)) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            TableRow tr = (TableRow) imgTable.getChildAt(i);
-                            ImageView iv = (ImageView) tr.getChildAt(j);
-                            Bitmap bitmap = BitmapFactory.decodeFile(destFile.getAbsolutePath());
-                            iv.setImageBitmap(bitmap);
-                        }
-                    });
-                }
+        new Thread(() -> {
+            File destFile = new File(externalFilesDir, url.substring(url.lastIndexOf('/') + 1));
+            TableLayout imgTable = findViewById(R.id.img_table);
+            if (imgDL.downloadImage(url, destFile)) {
+                runOnUiThread(() -> {
+                    TableRow tr = (TableRow) imgTable.getChildAt(i);
+                    ImageView iv = (ImageView) tr.getChildAt(j);
+                    Bitmap bitmap = BitmapFactory.decodeFile(destFile.getAbsolutePath());
+                    iv.setImageBitmap(bitmap);
+                });
             }
         }).start();
     }
