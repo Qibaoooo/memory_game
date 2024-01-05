@@ -126,7 +126,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 holder.setPadding(8, 10, 8, 10);
                 holder.setLayoutParams(params);
 
-                holder.getLayoutParams().height = 400;
+                holder.getLayoutParams().height = 338;
+                holder.getLayoutParams().width = 338;
                 holder.requestLayout();
                 holder.setScaleType(ImageView.ScaleType.FIT_XY);
 
