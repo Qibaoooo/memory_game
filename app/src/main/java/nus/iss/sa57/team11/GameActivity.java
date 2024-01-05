@@ -3,10 +3,7 @@ package nus.iss.sa57.team11;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.view.View;
@@ -17,79 +14,71 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class GameActivity extends AppCompatActivity implements View.OnClickListener{
     //private File externalFilesDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
     private boolean isFirstClick = true;
-    int firstClickId = 99;
-    List<Integer> pairedValues = new ArrayList<>();
-    int pairedCount;
-    List<String> imgPaths;
+    int firstClickId;
+    List<Integer> matchedId = new ArrayList<>();//this is for checking click
+    int matches;
     private TextView timerTextView;
     private long startTime;
     private final Handler handler = new Handler();
-    int attempt;
+    int attempts;
+    List<String> imgPaths;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
-        imgPaths = getImgFilesDir();
+        imgPaths = getImgFilesDir();//get the list on create because the list is random
         setImgHolders();
-        pairedCount = 0;
-        attempt = 0;
+        matches = 0;
         setMatchesText();
+        attempts = 0;
         setAttemptsText();
         timerTextView = findViewById(R.id.timer);
         startTime = SystemClock.elapsedRealtime();
         handler.postDelayed(updateTimerRunnable, 1000);
-        Button restartBtn = findViewById(R.id.reset111);
-        restartBtn.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
-                restart();
-            }
-        });
+        Button restartBtn = findViewById(R.id.reset_btn);
+        restartBtn.setOnClickListener(v -> restart());
         //setPictures();
     }
 
     @Override
     public void onClick(View v){
         int id = v.getId();
-        if(!pairedValues.contains(id)) {
+        if(!matchedId.contains(id)) { //avoid first click on revealed img
+            setPicture(imgPaths, id);
             if (isFirstClick) {
-                setPicture(imgPaths, id);
-                attempt++;
+                attempts++;
                 firstClickId = id;
                 isFirstClick = false;
             } else {
-                setPicture(imgPaths, id);
-                if (id == firstClickId) {
-                    //do nothing
-                } else if (imgPaths.get(id).equalsIgnoreCase(imgPaths.get(firstClickId))) {
-                    isFirstClick = true;
-                    pairedValues.add(id);
-                    pairedValues.add(firstClickId);
-                    pairedCount++;
-                    attempt++;
-                    setMatchesText();
-                    if(pairedCount == 6){
-                        pauseTimer();
-                    }
-                } else {
-                    attempt++;
-                    Handler handler = new Handler();
-                    handler.postDelayed(() -> {
-                        setBackground(id);
-                        setBackground(firstClickId);
+                if (id != firstClickId) { //avoid click on same img
+                    if (imgPaths.get(id).equalsIgnoreCase(imgPaths.get(firstClickId))) {
                         isFirstClick = true;
-                    }, 400);
+                        matchedId.add(id);
+                        matchedId.add(firstClickId);
+                        matches++;
+                        attempts++;
+                        setMatchesText();
+                        if (matches == 6) {
+                            handler.removeCallbacks(updateTimerRunnable);
+                        }
+                    } else {
+                        attempts++;
+                        Handler handler = new Handler();
+                        handler.postDelayed(() -> {
+                            setBackground(id);
+                            setBackground(firstClickId);
+                            isFirstClick = true;
+                        }, 400);
+                    }
                 }
             }
         }
@@ -166,16 +155,6 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         }
     };
 
-    /*private void resetTimer() {
-        // 重置计时器
-        startTime = SystemClock.elapsedRealtime();
-        timerTextView.setText("00:00:00");
-    }*/
-
-    private void pauseTimer(){
-        handler.removeCallbacks(updateTimerRunnable);
-    }
-
     private void restart(){
         finish();
         Intent intent = new Intent(this, GameActivity.class);
@@ -184,26 +163,12 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
 
     private void setMatchesText(){
         TextView matches = findViewById(R.id.matches);
-        matches.setText(String.format(getString(R.string.matches_text), pairedCount));
+        matches.setText(String.format(getString(R.string.matches_text), this.matches));
     }
 
     private void setAttemptsText(){
         TextView attempts = findViewById(R.id.attempts);
-        attempts.setText(String.format(getString(R.string.attempts), attempt));
+        attempts.setText(String.format(getString(R.string.attempts), this.attempts));
     }
 
-    /*private void setPictures(List<String> imgPath) {
-        TableLayout imgTable = findViewById(R.id.game_img_table);
-        int index = 0;
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 3; j++) {
-                TableRow tr = (TableRow) imgTable.getChildAt(i);
-                ImageView iv = (ImageView) tr.getChildAt(j);
-                //Bitmap bitmap = BitmapFactory.decodeFile(destFile.getAbsolutePath());
-                //iv.setImageBitmap(bitmap);
-                int id = this.getResources().getIdentifier(imgPath.get(index++),"drawable",this.getPackageName());
-                iv.setImageResource(id);
-            }
-        }
-    }*/
 }
