@@ -3,6 +3,7 @@ package nus.iss.sa57.team11;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -23,6 +24,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, AsyncResponse {
 
     private Button fetch_btn;
+    private Button game_btn;
     private final String DEFAULT_URL = "https://www.wallpaperbetter.com/es/search?q=birds";
     //TODO: find a better website or add handling for DUPLICATED images!
     private List<String> allImgUrls;
@@ -40,14 +42,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
-        EditText et = findViewById(R.id.edit_url);
-        String URLString = String.valueOf(et.getText());
-        startDownloadImage(URLString);
+        int id = v.getId();
+        if(id == R.id.fetch_btn) {
+            EditText et = findViewById(R.id.edit_url);
+            String URLString = String.valueOf(et.getText());
+            startDownloadImage(URLString);
+        }
+        else if(id == R.id.game_btn){
+            Intent intent = new Intent(this,GameActivity.class);
+            startActivity(intent);
+        }
     }
 
     private void setupFetchButton() {
         fetch_btn = findViewById(R.id.fetch_btn);
         fetch_btn.setOnClickListener(this);
+        game_btn = findViewById(R.id.game_btn);
+        game_btn.setOnClickListener(this);
     }
 
     private void setupURLEditText() {

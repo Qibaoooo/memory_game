@@ -60,6 +60,13 @@
                 android:progress="0"/>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
+            <Button
+                android:id="@+id/game_btn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Game"></Button>
+
         </LinearLayout>
 
     </ScrollView>
