@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             tr.setLayoutParams(new TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT));
             for (int j = 0; j < 4; j++) {
                 ImageView holder = new ImageView(this);
-                holder.setImageResource(R.drawable.ic_launcher_background);
+                holder.setImageResource(R.drawable.q_mark);
                 TableRow.LayoutParams params = new TableRow.LayoutParams(
                         TableRow.LayoutParams.WRAP_CONTENT,
                         TableRow.LayoutParams.WRAP_CONTENT,
