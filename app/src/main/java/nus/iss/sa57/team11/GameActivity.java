@@ -3,7 +3,10 @@ package nus.iss.sa57.team11;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.view.View;
@@ -14,6 +17,7 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -30,12 +34,17 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     private final Handler handler = new Handler();
     int attempts;
     List<String> imgPaths;
+    ArrayList<String> imgNames;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
-        imgPaths = getImgFilesDir();//get the list on create because the list is random
+        Intent intent = getIntent();
+        imgNames = intent.getStringArrayListExtra("imgList");
+        imgPaths = getImgFilesDir(imgNames);//get the list on create because the list is random
+        //imgPaths = getImgFilesDir1();
+        //Can try this for beautiful images, you will also want to change setPicture to setPicture1
         setImgHolders();
         matches = 0;
         setMatchesText();
@@ -46,7 +55,6 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         handler.postDelayed(updateTimerRunnable, 1000);
         Button restartBtn = findViewById(R.id.reset_btn);
         restartBtn.setOnClickListener(v -> restart());
-        //setPictures();
     }
 
     @Override
@@ -54,6 +62,8 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         int id = v.getId();
         if(!matchedId.contains(id)) { //avoid first click on revealed img
             setPicture(imgPaths, id);
+            //setPicture1(imgPaths, id);
+            //Can try setPicture1 if you want to see beautiful images
             if (isFirstClick) {
                 attempts++;
                 firstClickId = id;
@@ -113,12 +123,24 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    private void setPicture(List<String> imgPath,int index){
+    private void setPicture1(List<String> imgPath,int index){
         TableLayout imgTable = findViewById(R.id.game_img_table);
         TableRow tr = (TableRow) imgTable.getChildAt(index / 3);
         ImageView iv = (ImageView) tr.getChildAt(index % 3);
         int id = getResources().getIdentifier(imgPath.get(index),"drawable",getPackageName());
         iv.setImageResource(id);
+    }
+
+    private void setPicture(List<String> imgPath,int index){
+        TableLayout imgTable = findViewById(R.id.game_img_table);
+        TableRow tr = (TableRow) imgTable.getChildAt(index / 3);
+        ImageView iv = (ImageView) tr.getChildAt(index % 3);
+        //int id = getResources().getIdentifier(imgPath.get(index),"drawable",getPackageName());
+        //iv.setImageResource(id);
+        File externalFilesDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File destFile = new File(externalFilesDir, imgPath.get(index));
+        Bitmap bitmap = BitmapFactory.decodeFile(destFile.getAbsolutePath());
+        iv.setImageBitmap(bitmap);
     }
 
     private void setBackground(int index){
@@ -128,13 +150,25 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         iv.setImageResource(R.drawable.q_mark);
     }
 
-    private List<String> getImgFilesDir(){
+    private List<String> getImgFilesDir1(){
         List<String> originalName = Arrays.asList("t0", "t1", "t2", "t3", "t4", "t5");
         //File externalFilesDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         //File[] files = externalFilesDir.listFiles();
         List<String> res = new ArrayList<>();
         res.addAll(originalName);
         res.addAll(originalName);
+        Collections.shuffle(res);
+
+        return res;
+    }
+
+    private List<String> getImgFilesDir(ArrayList<String> names){
+        //List<String> originalName = Arrays.asList("t0", "t1", "t2", "t3", "t4", "t5");
+        //File externalFilesDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        //File[] files = externalFilesDir.listFiles();
+        List<String> res = new ArrayList<>();
+        res.addAll(names);
+        res.addAll(names);
         Collections.shuffle(res);
 
         return res;
@@ -158,6 +192,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     private void restart(){
         finish();
         Intent intent = new Intent(this, GameActivity.class);
+        intent.putStringArrayListExtra("imgList",new ArrayList<>(imgNames));
         startActivity(intent);
     }
 
