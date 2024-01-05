@@ -111,7 +111,8 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
                 );
                 holder.setLayoutParams(params);
 
-                holder.getLayoutParams().height = 400; //can change the size according to you requirements
+                holder.getLayoutParams().height = 338;
+                holder.getLayoutParams().width = 338;
                 holder.requestLayout();
                 holder.setScaleType(ImageView.ScaleType.FIT_XY);
                 holder.setId(index++);
