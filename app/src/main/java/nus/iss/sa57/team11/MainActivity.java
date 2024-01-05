@@ -19,6 +19,7 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, AsyncResponse {
@@ -28,6 +29,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private final String DEFAULT_URL = "https://www.wallpaperbetter.com/es/search?q=birds";
     //TODO: find a better website or add handling for DUPLICATED images!
     private List<String> allImgUrls;
+    private List<ImageView> imageViews;
 
 
     @Override
@@ -44,9 +46,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         int id = v.getId();
         if(id == R.id.fetch_btn) {
-            EditText et = findViewById(R.id.edit_url);
-            String URLString = String.valueOf(et.getText());
-            startDownloadImage(URLString);
+          EditText et = findViewById(R.id.edit_url);
+          String URLString = String.valueOf(et.getText());
+
+          // reset all images
+          for (ImageView iv: this.imageViews
+               ) {
+              iv.setImageResource(R.drawable.q_mark);
+          }
+
+          startDownloadImage(URLString);
         }
         else if(id == R.id.game_btn){
             Intent intent = new Intent(this,GameActivity.class);
@@ -70,13 +79,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         /*
          * Init the 20 images place holders
          * */
+        this.imageViews = new ArrayList<ImageView>();
         TableLayout imgTable = findViewById(R.id.img_table);
         for (int i = 0; i < 5; i++) {
             TableRow tr = new TableRow(this);
             tr.setLayoutParams(new TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT));
             for (int j = 0; j < 4; j++) {
                 ImageView holder = new ImageView(this);
-                holder.setImageResource(R.drawable.ic_launcher_background);
+                holder.setImageResource(R.drawable.q_mark);
                 TableRow.LayoutParams params = new TableRow.LayoutParams(
                         TableRow.LayoutParams.WRAP_CONTENT,
                         TableRow.LayoutParams.WRAP_CONTENT,
@@ -84,11 +94,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 );
                 holder.setLayoutParams(params);
 
-                holder.getLayoutParams().height = 400; //can change the size according to you requirements
+                holder.getLayoutParams().height = 400;
                 holder.requestLayout();
                 holder.setScaleType(ImageView.ScaleType.FIT_XY);
 
                 tr.addView(holder);
+                this.imageViews.add(holder);
             }
             imgTable.addView(tr);
         }
