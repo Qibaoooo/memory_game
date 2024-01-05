@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (v.getId() == R.id.fetch_btn) {
             onClickFetchButton();
         } else if (v.getId() == R.id.game_btn) {
-            Intent intent = new Intent(this,GameActivity.class);
+            Intent intent = new Intent(this, GameActivity.class);
             startActivity(intent);
         } else {
             onClickImage((ImageView) v);
@@ -66,8 +66,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             v.setBackgroundResource(R.color.gray);
             this.selectedImageViews.remove(v);
         } else {
-            v.setBackgroundResource(R.color.white);
-            this.selectedImageViews.add(v);
+            if (this.selectedImageViews.size() < 6) {
+                v.setBackgroundResource(R.color.white);
+                this.selectedImageViews.add(v);
+            }
         }
     }
 
@@ -112,7 +114,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         TableRow.LayoutParams.WRAP_CONTENT,
                         1.0f
                 );
-                holder.setPadding(8,10,8,10);
+                holder.setPadding(8, 10, 8, 10);
                 holder.setLayoutParams(params);
 
                 holder.getLayoutParams().height = 400;
@@ -197,13 +199,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void SetOnClickListenersForImages() {
-        for (ImageView iv: this.imageViews
+        for (ImageView iv : this.imageViews
         ) {
             iv.setOnClickListener(this);
         }
     }
+
     private void RemoveOnClickListenersForImages() {
-        for (ImageView iv: this.imageViews
+        for (ImageView iv : this.imageViews
         ) {
             iv.setOnClickListener(null);
         }
