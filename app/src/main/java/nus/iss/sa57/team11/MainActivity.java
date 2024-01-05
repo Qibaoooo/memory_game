@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private Button fetch_btn;
     private Button game_btn;
-    private final String DEFAULT_URL = "https://www.wallpaperbetter.com/es/search?q=birds";
+    private final String DEFAULT_URL = "https://www.wallpaperbetter.com/es/search?q=tom";
     //TODO: find a better website or add handling for DUPLICATED images!
     private List<String> allImgUrls;
     private List<ImageView> imageViews;
