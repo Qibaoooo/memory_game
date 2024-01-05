@@ -30,6 +30,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     //TODO: find a better website or add handling for DUPLICATED images!
     private List<String> allImgUrls;
     private List<ImageView> imageViews;
+    private List<ImageView> selectedImageViews;
+    private int selectedImageCount;
 
 
     @Override
@@ -37,33 +39,51 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        setupFetchButton();
+        // init fields
+        this.imageViews = new ArrayList<ImageView>();
+        this.selectedImageViews = new ArrayList<ImageView>();
+
+        // init UI
+        setupButtons();
         setupURLEditText();
         setupImagePlaceholders();
     }
 
     @Override
     public void onClick(View v) {
-        int id = v.getId();
-        if(id == R.id.fetch_btn) {
-          EditText et = findViewById(R.id.edit_url);
-          String URLString = String.valueOf(et.getText());
-
-          // reset all images
-          for (ImageView iv: this.imageViews
-               ) {
-              iv.setImageResource(R.drawable.q_mark);
-          }
-
-          startDownloadImage(URLString);
-        }
-        else if(id == R.id.game_btn){
+        if (v.getId() == R.id.fetch_btn) {
+            onClickFetchButton();
+        } else if (v.getId() == R.id.game_btn) {
             Intent intent = new Intent(this,GameActivity.class);
             startActivity(intent);
+        } else {
+            onClickImage((ImageView) v);
         }
     }
 
-    private void setupFetchButton() {
+    private void onClickImage(ImageView v) {
+        if (this.selectedImageViews.contains(v)) {
+            v.setBackgroundResource(R.color.gray);
+            this.selectedImageViews.remove(v);
+        } else {
+            v.setBackgroundResource(R.color.white);
+            this.selectedImageViews.add(v);
+        }
+    }
+
+    private void onClickFetchButton() {
+        EditText et = findViewById(R.id.edit_url);
+        String URLString = String.valueOf(et.getText());
+        // reset all images
+        for (ImageView iv : this.imageViews
+        ) {
+            iv.setImageResource(R.drawable.q_mark);
+            iv.setBackgroundResource(R.color.gray);
+        }
+        startDownloadImage(URLString);
+    }
+
+    private void setupButtons() {
         fetch_btn = findViewById(R.id.fetch_btn);
         fetch_btn.setOnClickListener(this);
         game_btn = findViewById(R.id.game_btn);
@@ -92,6 +112,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         TableRow.LayoutParams.WRAP_CONTENT,
                         1.0f
                 );
+                holder.setPadding(8,10,8,10);
                 holder.setLayoutParams(params);
 
                 holder.getLayoutParams().height = 400;
@@ -106,6 +127,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     protected void startDownloadImage(String imgURL) {
+        // make images not clickable
+        RemoveOnClickListenersForImages();
         // progress bar to zero
         ProgressBar pb = findViewById(R.id.download_bar);
         pb.setProgress(0);
@@ -164,8 +187,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     downloadImageAndUpdateUI(externalFilesDir, result, i, j);
                 }
             }
+
+            /**
+             * Make the images ready for selection
+             */
+            SetOnClickListenersForImages();
         }
 
+    }
+
+    private void SetOnClickListenersForImages() {
+        for (ImageView iv: this.imageViews
+        ) {
+            iv.setOnClickListener(this);
+        }
+    }
+    private void RemoveOnClickListenersForImages() {
+        for (ImageView iv: this.imageViews
+        ) {
+            iv.setOnClickListener(null);
+        }
     }
 
     private void downloadImageAndUpdateUI(File externalFilesDir, List<String> allImageUrls, int i, int j) {
@@ -182,7 +223,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     iv.setImageBitmap(bitmap);
                     // progress bar update
                     ProgressBar pb = findViewById(R.id.download_bar);
-                    pb.incrementProgressBy(100/20); // 20 total imgs
+                    pb.incrementProgressBy(100 / 20); // 20 total imgs
                 });
             }
         }).start();
