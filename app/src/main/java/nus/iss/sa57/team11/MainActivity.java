@@ -219,7 +219,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ImageDownloader imgDL = new ImageDownloader();
         String url = allImageUrls.get(i * 4 + j);
         new Thread(() -> {
-            File destFile = new File(externalFilesDir, url.substring(url.lastIndexOf('/') + 1));
+            File destFile = new File(externalFilesDir, ("img-" + String.valueOf(i*4+j)));
             TableLayout imgTable = findViewById(R.id.img_table);
             if (imgDL.downloadImage(url, destFile)) {
                 runOnUiThread(() -> {

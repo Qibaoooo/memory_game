@@ -57,8 +57,6 @@ public class ImageDownloader {
         try {
 
             URL url = new URL(imgURL);
-            // for testing
-            // URL url2 = new URL("https://p4.wallpaperbetter.com/wallpaper/291/663/679/stones-background-stones-spa-wallpaper-preview.jpg");
 
             URLConnection conn = url.openConnection();
 
