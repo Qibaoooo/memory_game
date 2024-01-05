@@ -4,25 +4,26 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowMetrics;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 
 import java.io.File;
+import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, AsyncResponse {
 
     protected Button fetch_btn;
-    private final String DEFAULT_URL = "https://www.wallpaperbetter.com/es/search?q=cat";
+    private final String DEFAULT_URL = "https://www.wallpaperbetter.com/es/search?q=birds";
+    List<String> allImgUrls;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,7 +31,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
 
         setupFetchButton();
-        setupImages();
+        setupImagePlaceholders();
     }
 
     @Override
@@ -45,7 +46,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         fetch_btn.setOnClickListener(this);
     }
 
-    private void setupImages() {
+    private void setupImagePlaceholders() {
         EditText et = findViewById(R.id.edit_url);
         et.setText(DEFAULT_URL);
 
@@ -72,35 +73,82 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             imgTable.addView(tr);
         }
 
-        startDownloadImage(DEFAULT_URL);
+        startDownloadImage(et.getText().toString());
     }
 
     protected void startDownloadImage(String imgURL) {
-        // creating a background thread
+        // clean folder
+        TableLayout imgTable = findViewById(R.id.img_table);
+        File externalFilesDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        for (File f : externalFilesDir.listFiles()
+        ) {
+            f.delete();
+        }
+
+        // downloading start
+        /*
+        * Here I used a AsyncTask task to do the download, because
+        * we can't open up internet connections on the UI thread.
+        * This is the stackoverflow answer I referred to:
+        * https://stackoverflow.com/questions/12575068/how-to-get-the-result-of-onpostexecute-to-main-activity-because-asynctask-is-a
+        * */
+        GetIndividualImageUrlsTask task = new GetIndividualImageUrlsTask();
+        task.delegate = this;
+        task.execute(imgURL);
+    }
+
+    @Override
+    public void processFinish(List<String> output) {
+        /*
+        * Save the output (a list of img urls) to the class variable allImgUrls.
+        * For now it has no usage yet but later we might need it.
+        * */
+        allImgUrls = output;
+    }
+
+    private  class GetIndividualImageUrlsTask extends AsyncTask<String, Void, List<String>> {
+        public AsyncResponse delegate = null;
+
+        @Override
+        protected List<String> doInBackground(String... urls) {
+            ImageDownloader imgDL = new ImageDownloader();
+            List<String> imgUrls = imgDL.getIndividualImageUrls(urls[0]);
+            return imgUrls;
+        }
+
+        protected void onPostExecute(List<String> result) {
+            delegate.processFinish(result);
+            File externalFilesDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+            /*
+            * Here we have gotten 20 img urls.
+            * Now we loop around the 20 img, after downloading each one,
+            * we update UI.
+            * The 20 downloads are executed in parallel.
+            * */
+            for (int i = 0; i < 5; i++) {
+                for (int j = 0; j < 4; j++) {
+                    downloadImageAndUpdateUI(externalFilesDir, result, i, j);
+                }
+            }
+        }
+    }
+
+    private void downloadImageAndUpdateUI(File externalFilesDir, List<String> allImageUrls, int i, int j) {
+        ImageDownloader imgDL = new ImageDownloader();
+        String url = allImageUrls.get(i * 4 + j);
         new Thread(new Runnable() {
             @Override
             public void run() {
+                File destFile = new File(externalFilesDir, url.substring(url.lastIndexOf('/') + 1));
                 TableLayout imgTable = findViewById(R.id.img_table);
-                ImageDownloader imgDL = new ImageDownloader();
-                File externalFilesDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-                for (File f:externalFilesDir.listFiles()
-                     ) {
-                    f.delete();
-                }
-                if (imgDL.downloadAllImages(imgURL, externalFilesDir)) {
+                if (imgDL.downloadImage(url, destFile)) {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            File[] files = externalFilesDir.listFiles();
-                            for (int i = 0; i < 5; i++) {
-                                for (int j = 0; j < 4; j++) {
-                                    TableRow tr = (TableRow) imgTable.getChildAt(i);
-                                    ImageView iv = (ImageView) tr.getChildAt(j);
-                                    Bitmap bitmap = BitmapFactory.decodeFile(files[i * 4 + j].getAbsolutePath());
-                                    iv.setImageBitmap(bitmap);
-                                }
-                            }
-                            Log.d("debug", "here");
+                            TableRow tr = (TableRow) imgTable.getChildAt(i);
+                            ImageView iv = (ImageView) tr.getChildAt(j);
+                            Bitmap bitmap = BitmapFactory.decodeFile(destFile.getAbsolutePath());
+                            iv.setImageBitmap(bitmap);
                         }
                     });
                 }

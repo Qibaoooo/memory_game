@@ -2,6 +2,8 @@ package nus.iss.sa57.team11;
 
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -12,37 +14,40 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ImageDownloader {
 
-    protected boolean downloadAllImages(String imgURL, File dir) {
+    protected List<String> getIndividualImageUrls(String imgURL) {
         try {
             Document doc = Jsoup.connect(imgURL).get();
-            List<Element> imgs = doc.getElementsByTag("img");
-            List<String> img_urls = imgs.stream()
-                    .map(e -> e.absUrl("data-src"))
-                    .filter(s -> s.endsWith("jpg") || s.endsWith("png")|| s.endsWith("jpeg") )
+            List<Element> imageElements;
+            imageElements = doc.getElementsByTag("img");
+
+            List<String> img_urls_data_src = getImageUrlsFromAttribute(imageElements, "data-src");
+            List<String> img_urls_src = getImageUrlsFromAttribute(imageElements, "src");
+            List<String> img_urls = Stream
+                    .concat(img_urls_src.stream(), img_urls_data_src.stream())
                     .collect(Collectors.toList());
-
             if (img_urls.size() < 20) {
-                Log.e("downloadImage", "The website has < 20 imgs shown. Choose another website.");
+                Log.e("downloadImage", "The website has < 20 imageElements shown. Choose another website.");
+                throw new Exception();
             }
-
-            for (int i = 0; i < 5; i++) {
-                for (int j = 0; j < 4; j++) {
-                    String url = img_urls.get(4 * i + j);
-                    File destFile = new File(dir, url.substring(url.lastIndexOf('/') + 1));
-                    downloadImage(url, destFile);
-                }
-            }
-
-            return true;
+            return img_urls;
         } catch (Exception e) {
-            return false;
+            return new ArrayList<>();
         }
+    }
 
+    @NonNull
+    private static List<String> getImageUrlsFromAttribute(List<Element> imageElements, String attr) {
+        return imageElements.stream()
+                .map(e -> e.absUrl(attr))
+                .filter(s -> s.endsWith("jpg") || s.endsWith("png") || s.endsWith("jpeg"))
+                .collect(Collectors.toList());
     }
 
     protected boolean downloadImage(String imgURL, File destFile) {
