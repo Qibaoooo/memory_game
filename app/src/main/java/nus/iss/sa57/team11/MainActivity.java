@@ -8,17 +8,16 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, AsyncResponse {
@@ -85,6 +84,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     protected void startDownloadImage(String imgURL) {
+        // progress bar to zero
+        ProgressBar pb = findViewById(R.id.download_bar);
+        pb.setProgress(0);
         // clean folder
         File externalFilesDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File[] files = externalFilesDir.listFiles();
@@ -156,6 +158,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     ImageView iv = (ImageView) tr.getChildAt(j);
                     Bitmap bitmap = BitmapFactory.decodeFile(destFile.getAbsolutePath());
                     iv.setImageBitmap(bitmap);
+                    // progress bar update
+                    ProgressBar pb = findViewById(R.id.download_bar);
+                    pb.incrementProgressBy(100/20); // 20 total imgs
                 });
             }
         }).start();
