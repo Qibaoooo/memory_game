@@ -76,12 +76,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void onClickFetchButton() {
         EditText et = findViewById(R.id.edit_url);
         String URLString = String.valueOf(et.getText());
+
         // reset all images
+        this.selectedImageViews = new ArrayList<ImageView>();
         for (ImageView iv : this.imageViews
         ) {
             iv.setImageResource(R.drawable.q_mark);
             iv.setBackgroundResource(R.color.gray);
         }
+
         startDownloadImage(URLString);
     }
 
