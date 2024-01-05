@@ -16,6 +16,9 @@
         android:theme="@style/Theme.Memory_game"
         tools:targetApi="31">
         <activity
+            android:name=".GameActivity"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
