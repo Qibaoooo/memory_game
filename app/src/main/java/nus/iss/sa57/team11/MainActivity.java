@@ -18,6 +18,7 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, AsyncResponse {
@@ -26,6 +27,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private final String DEFAULT_URL = "https://www.wallpaperbetter.com/es/search?q=birds";
     //TODO: find a better website or add handling for DUPLICATED images!
     List<String> allImgUrls;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,6 +125,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             return imgDL.getIndividualImageUrls(urls[0]);
         }
 
+        @Override
         protected void onPostExecute(List<String> result) {
             delegate.processFinish(result);
             File externalFilesDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
@@ -138,6 +141,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }
         }
+
     }
 
     private void downloadImageAndUpdateUI(File externalFilesDir, List<String> allImageUrls, int i, int j) {
