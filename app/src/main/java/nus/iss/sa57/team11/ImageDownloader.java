@@ -15,7 +15,9 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -36,6 +38,7 @@ public class ImageDownloader {
                 Log.e("downloadImage", "The website has < 20 imageElements shown. Choose another website.");
                 throw new Exception();
             }
+            Set<String> img_urls_set = new HashSet<String>(img_urls);
             return img_urls;
         } catch (Exception e) {
             return new ArrayList<>();

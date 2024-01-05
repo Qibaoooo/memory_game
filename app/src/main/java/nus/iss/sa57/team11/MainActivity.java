@@ -24,6 +24,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     protected Button fetch_btn;
     private final String DEFAULT_URL = "https://www.wallpaperbetter.com/es/search?q=birds";
+    //TODO: find a better website or add handling for DUPLICATED images!
     List<String> allImgUrls;
 
     @Override
@@ -32,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
 
         setupFetchButton();
+        setupURLEditText();
         setupImagePlaceholders();
     }
 
@@ -39,7 +41,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         EditText et = findViewById(R.id.edit_url);
         String URLString = String.valueOf(et.getText());
-        Log.d("debug", URLString);
+        startDownloadImage(URLString);
     }
 
     private void setupFetchButton() {
@@ -47,10 +49,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         fetch_btn.setOnClickListener(this);
     }
 
-    private void setupImagePlaceholders() {
+    private void setupURLEditText() {
         EditText et = findViewById(R.id.edit_url);
         et.setText(DEFAULT_URL);
+    }
 
+    private void setupImagePlaceholders() {
+        /*
+         * Init the 20 images place holders
+         * */
         TableLayout imgTable = findViewById(R.id.img_table);
         for (int i = 0; i < 5; i++) {
             TableRow tr = new TableRow(this);
@@ -73,8 +80,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
             imgTable.addView(tr);
         }
-
-        startDownloadImage(et.getText().toString());
     }
 
     protected void startDownloadImage(String imgURL) {
