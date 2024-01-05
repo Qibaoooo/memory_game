@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -22,6 +23,8 @@ import java.util.stream.Collectors;
 public class GameActivity extends AppCompatActivity implements View.OnClickListener{
     //private File externalFilesDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
     private boolean isFirstClick = true;
+    int firstClickId = 99;
+    List<Integer> pairedValues = new ArrayList<>();
     List<String> imgPaths;
 
     @Override
@@ -35,9 +38,32 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v){
-        if(isFirstClick){
-            int id = v.getId();
-            setPicture(imgPaths,id);
+        int id = v.getId();
+        if(!pairedValues.contains(id)) {
+            if (isFirstClick) {
+                setPicture(imgPaths, id);
+                firstClickId = id;
+                isFirstClick = false;
+            } else {
+                setPicture(imgPaths, id);
+                if (id == firstClickId) {
+                    return;
+                } else if (imgPaths.get(id).equalsIgnoreCase(imgPaths.get(firstClickId))) {
+                    isFirstClick = true;
+                    pairedValues.add(id);
+                    pairedValues.add(firstClickId);
+                } else {
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            setBackground(id);
+                            setBackground(firstClickId);
+                            isFirstClick = true;
+                        }
+                    }, 400);
+                }
+            }
         }
     }
 
@@ -75,6 +101,13 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         ImageView iv = (ImageView) tr.getChildAt(index % 3);
         int id = this.getResources().getIdentifier(imgPath.get(index),"drawable",this.getPackageName());
         iv.setImageResource(id);
+    }
+
+    private void setBackground(int index){
+        TableLayout imgTable = findViewById(R.id.game_img_table);
+        TableRow tr = (TableRow) imgTable.getChildAt(index / 3);
+        ImageView iv = (ImageView) tr.getChildAt(index % 3);
+        iv.setImageResource(R.drawable.q_mark);
     }
 
     private void setPictures(List<String> imgPath) {
