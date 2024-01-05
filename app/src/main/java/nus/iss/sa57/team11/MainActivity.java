@@ -23,10 +23,10 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, AsyncResponse {
 
-    protected Button fetch_btn;
+    private Button fetch_btn;
     private final String DEFAULT_URL = "https://www.wallpaperbetter.com/es/search?q=birds";
     //TODO: find a better website or add handling for DUPLICATED images!
-    List<String> allImgUrls;
+    private List<String> allImgUrls;
 
 
     @Override
