@@ -46,9 +46,11 @@
                 android:layout_height="wrap_content" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/progress"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:paddingBottom="10dp">
+                android:paddingBottom="10dp"
+                android:visibility="gone">
 
                 <ProgressBar
                     android:id="@+id/download_bar"
@@ -56,9 +58,22 @@
                     android:layout_width="250dp"
                     android:layout_height="35dp"
                     android:progress="0"
-                    app:layout_constraintBaseline_toTopOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent" />
+
+                <TextView
+                    android:id="@+id/progress_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/progress_text"
+                    android:textSize="16sp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    android:gravity="center"/>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <Button

@@ -10,4 +10,5 @@
     <string name="attempts"> %1$d Attempts </string>
     <string name="btn_back"> Select Other Images </string>
     <string name="btn_default_game">Start Game With Default Images</string>
+    <string name="progress_text">0 of 20 images downloaded</string>
 </resources>
