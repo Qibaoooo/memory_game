@@ -8,6 +8,6 @@
     <string name="init_time">00:00:00</string>
     <string name="timer">Time Used</string>
     <string name="attempts"> %1$d Attempts </string>
-    <string name="btn_back"> Back </string>
+    <string name="btn_back"> Select Other Images </string>
     <string name="btn_default_game">Start Game With Default Images</string>
 </resources>
