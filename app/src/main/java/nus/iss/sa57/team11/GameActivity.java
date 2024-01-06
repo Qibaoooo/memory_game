@@ -11,6 +11,8 @@ import android.os.Handler;
 import android.os.SystemClock;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TableLayout;
@@ -34,8 +36,9 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     private List<String> imgPaths;
     private ArrayList<String> imgNames;
     private boolean isFirstClick;
-    int firstClickId;
+    private int firstClickId;
     private List<Integer> matchedId;//this is for checking click
+    private View firstClickedView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +79,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
                 attempts++;
                 firstClickId = id;
                 isFirstClick = false;
+                firstClickedView = v;
             } else {
                 if (id != firstClickId) { //avoid click on same img
                     if (imgPaths.get(id).equalsIgnoreCase(imgPaths.get(firstClickId))) {
@@ -85,6 +89,9 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
                         matches++;
                         attempts++;
                         setMatchesText();
+                        Animation emphasis = AnimationUtils.loadAnimation(this, R.anim.emphasis);
+                        v.startAnimation(emphasis);
+                        firstClickedView.startAnimation(emphasis);
                         if (matches == 6) {
                             handler.removeCallbacks(updateTimerRunnable);
                         }
@@ -109,14 +116,15 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         for (int i = 0; i < 4; i++) {
             TableRow tr = new TableRow(this);
             tr.setLayoutParams(new TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT));
+            TableRow.LayoutParams params = new TableRow.LayoutParams(
+                    TableRow.LayoutParams.WRAP_CONTENT,
+                    TableRow.LayoutParams.WRAP_CONTENT,
+                    1.0f
+            );
             for (int j = 0; j < 3; j++) {
                 ImageView holder = new ImageView(this);
                 holder.setImageResource(R.drawable.q_mark);
-                TableRow.LayoutParams params = new TableRow.LayoutParams(
-                        TableRow.LayoutParams.WRAP_CONTENT,
-                        TableRow.LayoutParams.WRAP_CONTENT,
-                        1.0f
-                );
+                holder.setPadding(8, 10, 8, 10);
                 holder.setLayoutParams(params);
 
                 holder.getLayoutParams().height = 338;
