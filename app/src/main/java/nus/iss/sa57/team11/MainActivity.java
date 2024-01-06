@@ -1,6 +1,7 @@
 package nus.iss.sa57.team11;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -17,6 +18,8 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TableLayout;
 import android.widget.TableRow;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -62,6 +65,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 intent.putStringArrayListExtra("imgList",new ArrayList<>(selected));
                 startActivity(intent);
+            } else{
+                Toast.makeText(this, "Please select 6 images or start with default images!", Toast.LENGTH_SHORT).show();
             }
         } else if (v.getId() == R.id.default_game_btn){
             Intent intent = new Intent(this, GameActivity.class);
@@ -81,6 +86,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if (this.selectedImageViews.size() < 6) {
                 v.setBackgroundResource(R.color.white);
                 this.selectedImageViews.add(v);
+            } else{
+                Toast.makeText(this, "There are already 6 images, remove one or start your game!", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -96,6 +103,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             iv.setImageResource(R.drawable.q_mark);
             iv.setBackgroundResource(R.color.gray);
         }
+
+        ConstraintLayout progressLayout = findViewById(R.id.progress);
+        progressLayout.setVisibility(View.VISIBLE);
+        TextView pt = findViewById(R.id.progress_text);
+        pt.setText("0 of 20 images downloaded");
 
         startDownloadImage(URLString);
     }
@@ -246,6 +258,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     // progress bar update
                     ProgressBar pb = findViewById(R.id.download_bar);
                     pb.incrementProgressBy(100 / 20); // 20 total imgs
+                    int progress = pb.getProgress()/5;
+                    TextView pt = findViewById(R.id.progress_text);
+                    pt.setText(progress + " of 20 images downloaded");
                 });
             }
         }).start();
