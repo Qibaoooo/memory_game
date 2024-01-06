@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private Button fetch_btn;
     private Button game_btn;
+    private Button default_game_btn;
     private final String DEFAULT_URL = "https://www.wallpaperbetter.com/es/search?q=tom";
     //TODO: find a better website or add handling for DUPLICATED images!
     private List<String> allImgUrls;
@@ -62,6 +63,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 intent.putStringArrayListExtra("imgList",new ArrayList<>(selected));
                 startActivity(intent);
             }
+        } else if (v.getId() == R.id.default_game_btn){
+            Intent intent = new Intent(this, GameActivity.class);
+            intent.putStringArrayListExtra("imgList",new ArrayList<>());
+            intent.putExtra("isDefault",true);
+            startActivity(intent);
         } else {
             onClickImage((ImageView) v);
         }
@@ -99,6 +105,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         fetch_btn.setOnClickListener(this);
         game_btn = findViewById(R.id.game_btn);
         game_btn.setOnClickListener(this);
+        default_game_btn = findViewById(R.id.default_game_btn);
+        default_game_btn.setOnClickListener(this);
     }
 
     private void setupURLEditText() {

@@ -35,6 +35,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     int attempts;
     List<String> imgPaths;
     ArrayList<String> imgNames;
+    Boolean isDefault;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,9 +43,13 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_game);
         Intent intent = getIntent();
         imgNames = intent.getStringArrayListExtra("imgList");
-        imgPaths = getImgFilesDir(imgNames);//get the list on create because the list is random
-        //imgPaths = getImgFilesDir1();
-        //Can try this for beautiful images, you will also want to change setPicture to setPicture1
+        isDefault = intent.getBooleanExtra("isDefault",false);
+        if(!isDefault) {
+            imgPaths = getImgFilesDir(imgNames);//get the list on create because the list is random
+        }else {
+            imgPaths = getImgFilesDir1();
+            //Can try this for beautiful images, you will also want to change setPicture to setPicture1
+        }
         setImgHolders();
         matches = 0;
         setMatchesText();
@@ -55,15 +60,25 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         handler.postDelayed(updateTimerRunnable, 1000);
         Button restartBtn = findViewById(R.id.reset_btn);
         restartBtn.setOnClickListener(v -> restart());
+        Button backBtn = findViewById((R.id.back_btn));
+        backBtn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                finish();
+            }
+        });
     }
 
     @Override
     public void onClick(View v){
         int id = v.getId();
         if(!matchedId.contains(id)) { //avoid first click on revealed img
-            setPicture(imgPaths, id);
-            //setPicture1(imgPaths, id);
-            //Can try setPicture1 if you want to see beautiful images
+            if(!isDefault) {
+                setPicture(imgPaths, id);
+            }else {
+                setPicture1(imgPaths, id);
+                //Can try setPicture1 if you want to see beautiful images
+            }
             if (isFirstClick) {
                 attempts++;
                 firstClickId = id;
