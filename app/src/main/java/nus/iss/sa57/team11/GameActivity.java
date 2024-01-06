@@ -11,6 +11,8 @@ import android.os.Handler;
 import android.os.SystemClock;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TableLayout;
@@ -34,8 +36,9 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     private List<String> imgPaths;
     private ArrayList<String> imgNames;
     private boolean isFirstClick;
-    int firstClickId;
+    private int firstClickId;
     private List<Integer> matchedId;//this is for checking click
+    private View firstClickedView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +79,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
                 attempts++;
                 firstClickId = id;
                 isFirstClick = false;
+                firstClickedView = v;
             } else {
                 if (id != firstClickId) { //avoid click on same img
                     if (imgPaths.get(id).equalsIgnoreCase(imgPaths.get(firstClickId))) {
@@ -85,6 +89,9 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
                         matches++;
                         attempts++;
                         setMatchesText();
+                        Animation heartBeatAnimation = AnimationUtils.loadAnimation(this, R.anim.heart);
+                        v.startAnimation(heartBeatAnimation);
+                        firstClickedView.startAnimation(heartBeatAnimation);
                         if (matches == 6) {
                             handler.removeCallbacks(updateTimerRunnable);
                         }
