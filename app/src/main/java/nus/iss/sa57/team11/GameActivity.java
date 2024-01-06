@@ -25,9 +25,9 @@ import java.util.List;
 
 public class GameActivity extends AppCompatActivity implements View.OnClickListener{
     //private File externalFilesDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-    private boolean isFirstClick = true;
+    private boolean isFirstClick;
     int firstClickId;
-    List<Integer> matchedId = new ArrayList<>();//this is for checking click
+    List<Integer> matchedId;//this is for checking click
     int matches;
     private TextView timerTextView;
     private long startTime;
@@ -42,14 +42,16 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
         Intent intent = getIntent();
-        imgNames = intent.getStringArrayListExtra("imgList");
         isDefault = intent.getBooleanExtra("isDefault",false);
         if(!isDefault) {
+            imgNames = intent.getStringArrayListExtra("imgList");
             imgPaths = getImgFilesDir(imgNames);//get the list on create because the list is random
         }else {
             imgPaths = getImgFilesDir1();
             //Can try this for beautiful images, you will also want to change setPicture to setPicture1
         }
+        isFirstClick = true;
+        matchedId = new ArrayList<>();
         setImgHolders();
         matches = 0;
         setMatchesText();
@@ -206,9 +208,15 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     };
 
     private void restart(){
-        finish();
         Intent intent = new Intent(this, GameActivity.class);
-        intent.putStringArrayListExtra("imgList",new ArrayList<>(imgNames));
+        if(!isDefault) {
+            intent.putStringArrayListExtra("imgList", new ArrayList<>(imgNames));
+            intent.putExtra("isDefault",false);
+        } else{
+            intent.putStringArrayListExtra("imgList", new ArrayList<>());
+            intent.putExtra("isDefault",true);
+        }
+        finish();
         startActivity(intent);
     }
 
