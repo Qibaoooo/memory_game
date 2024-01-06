@@ -9,6 +9,8 @@
     <string name="timer">Time Used</string>
     <string name="attempts"> %1$d Attempts </string>
     <string name="btn_back"> Select Other Images </string>
-    <string name="btn_default_game">Start Game With Default Images</string>
+    <string name="btn_default_game">Use Default Images</string>
+    <string name="btn_double_game">Activate Combat Mode</string>
     <string name="progress_text">0 of 20 images downloaded</string>
+    <string name="options">Advanced Settings</string>
 </resources>

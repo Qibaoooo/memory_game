@@ -2,6 +2,7 @@ package nus.iss.sa57.team11;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -12,6 +13,8 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -30,11 +33,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button fetch_btn;
     private Button game_btn;
     private Button default_game_btn;
+    private Button double_game_btn;
     private final String DEFAULT_URL = "https://www.wallpaperbetter.com/es/search?q=tom";
     //TODO: find a better website or add handling for DUPLICATED images!
     private List<String> allImgUrls;
     private List<ImageView> imageViews;
     private List<ImageView> selectedImageViews;
+    private boolean isDefault = false;
+    private boolean isDouble = false;
 
 
     @Override
@@ -57,22 +63,40 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (v.getId() == R.id.fetch_btn) {
             onClickFetchButton();
         } else if (v.getId() == R.id.game_btn) {
-            if(this.selectedImageViews.size() == 6) {
-                Intent intent = new Intent(this, GameActivity.class);
-                List<String> selected = new ArrayList<>();
-                for (ImageView i : selectedImageViews){
-                    selected.add("img-"+i.getId());
+            Intent intent = new Intent(this, GameActivity.class);
+            if(!isDefault) {
+                if (this.selectedImageViews.size() == 6) {
+                    List<String> selected = new ArrayList<>();
+                    for (ImageView i : selectedImageViews) {
+                        selected.add("img-" + i.getId());
+                    }
+                    intent.putStringArrayListExtra("imgList", new ArrayList<>(selected));
+                    intent.putExtra("isDouble", isDouble);
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(this, "Please select 6 images or start with default images!", Toast.LENGTH_SHORT).show();
                 }
-                intent.putStringArrayListExtra("imgList",new ArrayList<>(selected));
+            }else {
+                intent.putExtra("isDefault", true);
+                intent.putExtra("isDouble", isDouble);
                 startActivity(intent);
-            } else{
-                Toast.makeText(this, "Please select 6 images or start with default images!", Toast.LENGTH_SHORT).show();
             }
         } else if (v.getId() == R.id.default_game_btn){
-            Intent intent = new Intent(this, GameActivity.class);
-            intent.putStringArrayListExtra("imgList",new ArrayList<>());
-            intent.putExtra("isDefault",true);
-            startActivity(intent);
+            if(!isDefault){
+                isDefault = true;
+                default_game_btn.setBackgroundColor(ContextCompat.getColor(this, R.color.btn_pressed));
+            } else{
+                isDefault = false;
+                default_game_btn.setBackgroundColor(ContextCompat.getColor(this, R.color.btn_default));
+            }
+        } else if (v.getId() == R.id.double_game_btn) {
+            if (!isDouble) {
+                isDouble = true;
+                double_game_btn.setBackgroundColor(ContextCompat.getColor(this, R.color.btn_pressed));
+            } else {
+                isDouble = false;
+                double_game_btn.setBackgroundColor(ContextCompat.getColor(this, R.color.btn_default));
+            }
         } else {
             onClickImage((ImageView) v);
         }
@@ -86,8 +110,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if (this.selectedImageViews.size() < 6) {
                 v.setBackgroundResource(R.color.white);
                 this.selectedImageViews.add(v);
+                if (this.selectedImageViews.size() == 6){
+                    Animation btn_emphasis = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.emphasis);
+                    game_btn.startAnimation(btn_emphasis);
+                }
             } else{
-                Toast.makeText(this, "There are already 6 images, remove one or start your game!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "There are already 6 images, remove one or start game!", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -104,11 +132,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             iv.setBackgroundResource(R.color.gray);
         }
 
-        ConstraintLayout progressLayout = findViewById(R.id.progress);
-        progressLayout.setVisibility(View.VISIBLE);
-        TextView pt = findViewById(R.id.progress_text);
-        pt.setText("0 of 20 images downloaded");
-
         startDownloadImage(URLString);
     }
 
@@ -119,6 +142,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         game_btn.setOnClickListener(this);
         default_game_btn = findViewById(R.id.default_game_btn);
         default_game_btn.setOnClickListener(this);
+        double_game_btn = findViewById((R.id.double_game_btn));
+        double_game_btn.setOnClickListener(this);
     }
 
     private void setupURLEditText() {
@@ -135,14 +160,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         for (int i = 0; i < 5; i++) {
             TableRow tr = new TableRow(this);
             tr.setLayoutParams(new TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT));
+            TableRow.LayoutParams params = new TableRow.LayoutParams(
+                    TableRow.LayoutParams.WRAP_CONTENT,
+                    TableRow.LayoutParams.WRAP_CONTENT,
+                    1.0f
+            );
             for (int j = 0; j < 4; j++) {
                 ImageView holder = new ImageView(this);
                 holder.setImageResource(R.drawable.q_mark);
-                TableRow.LayoutParams params = new TableRow.LayoutParams(
-                        TableRow.LayoutParams.WRAP_CONTENT,
-                        TableRow.LayoutParams.WRAP_CONTENT,
-                        1.0f
-                );
                 holder.setPadding(8, 10, 8, 10);
                 holder.setLayoutParams(params);
 
@@ -162,8 +187,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // make images not clickable
         RemoveOnClickListenersForImages();
         // progress bar to zero
+        ConstraintLayout progressLayout = findViewById(R.id.progress);
+        progressLayout.setVisibility(View.VISIBLE);
         ProgressBar pb = findViewById(R.id.download_bar);
         pb.setProgress(0);
+        TextView pt = findViewById(R.id.progress_text);
+        pt.setText("0 of 20 images downloaded");//init progress text
         // clean folder
         File externalFilesDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File[] files = externalFilesDir.listFiles();

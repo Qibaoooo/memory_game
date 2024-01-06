@@ -89,9 +89,9 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
                         matches++;
                         attempts++;
                         setMatchesText();
-                        Animation heartBeatAnimation = AnimationUtils.loadAnimation(this, R.anim.heart);
-                        v.startAnimation(heartBeatAnimation);
-                        firstClickedView.startAnimation(heartBeatAnimation);
+                        Animation emphasis = AnimationUtils.loadAnimation(this, R.anim.emphasis);
+                        v.startAnimation(emphasis);
+                        firstClickedView.startAnimation(emphasis);
                         if (matches == 6) {
                             handler.removeCallbacks(updateTimerRunnable);
                         }
@@ -116,14 +116,15 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         for (int i = 0; i < 4; i++) {
             TableRow tr = new TableRow(this);
             tr.setLayoutParams(new TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT));
+            TableRow.LayoutParams params = new TableRow.LayoutParams(
+                    TableRow.LayoutParams.WRAP_CONTENT,
+                    TableRow.LayoutParams.WRAP_CONTENT,
+                    1.0f
+            );
             for (int j = 0; j < 3; j++) {
                 ImageView holder = new ImageView(this);
                 holder.setImageResource(R.drawable.q_mark);
-                TableRow.LayoutParams params = new TableRow.LayoutParams(
-                        TableRow.LayoutParams.WRAP_CONTENT,
-                        TableRow.LayoutParams.WRAP_CONTENT,
-                        1.0f
-                );
+                holder.setPadding(8, 10, 8, 10);
                 holder.setLayoutParams(params);
 
                 holder.getLayoutParams().height = 338;
