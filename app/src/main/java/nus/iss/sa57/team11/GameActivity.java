@@ -25,17 +25,17 @@ import java.util.List;
 
 public class GameActivity extends AppCompatActivity implements View.OnClickListener{
     //private File externalFilesDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-    private boolean isFirstClick;
-    int firstClickId;
-    List<Integer> matchedId;//this is for checking click
-    int matches;
+    private int matches;
+    private int attempts;
     private TextView timerTextView;
     private long startTime;
     private final Handler handler = new Handler();
-    int attempts;
-    List<String> imgPaths;
-    ArrayList<String> imgNames;
-    Boolean isDefault;
+    private boolean isDefault;
+    private List<String> imgPaths;
+    private ArrayList<String> imgNames;
+    private boolean isFirstClick;
+    int firstClickId;
+    private List<Integer> matchedId;//this is for checking click
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,8 +47,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
             imgNames = intent.getStringArrayListExtra("imgList");
             imgPaths = getImgFilesDir(imgNames);//get the list on create because the list is random
         }else {
-            imgPaths = getImgFilesDir1();
-            //Can try this for beautiful images, you will also want to change setPicture to setPicture1
+            imgPaths = getDefaultImgFilesDir();
         }
         isFirstClick = true;
         matchedId = new ArrayList<>();
@@ -57,18 +56,11 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         setMatchesText();
         attempts = 0;
         setAttemptsText();
-        timerTextView = findViewById(R.id.timer);
-        startTime = SystemClock.elapsedRealtime();
-        handler.postDelayed(updateTimerRunnable, 1000);
+        initTimer();
         Button restartBtn = findViewById(R.id.reset_btn);
         restartBtn.setOnClickListener(v -> restart());
         Button backBtn = findViewById((R.id.back_btn));
-        backBtn.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
-                finish();
-            }
-        });
+        backBtn.setOnClickListener(v -> finish());
     }
 
     @Override
@@ -78,8 +70,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
             if(!isDefault) {
                 setPicture(imgPaths, id);
             }else {
-                setPicture1(imgPaths, id);
-                //Can try setPicture1 if you want to see beautiful images
+                setDefaultPicture(imgPaths, id);
             }
             if (isFirstClick) {
                 attempts++;
@@ -141,7 +132,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    private void setPicture1(List<String> imgPath,int index){
+    private void setDefaultPicture(List<String> imgPath, int index){
         TableLayout imgTable = findViewById(R.id.game_img_table);
         TableRow tr = (TableRow) imgTable.getChildAt(index / 3);
         ImageView iv = (ImageView) tr.getChildAt(index % 3);
@@ -153,8 +144,6 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         TableLayout imgTable = findViewById(R.id.game_img_table);
         TableRow tr = (TableRow) imgTable.getChildAt(index / 3);
         ImageView iv = (ImageView) tr.getChildAt(index % 3);
-        //int id = getResources().getIdentifier(imgPath.get(index),"drawable",getPackageName());
-        //iv.setImageResource(id);
         File externalFilesDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File destFile = new File(externalFilesDir, imgPath.get(index));
         Bitmap bitmap = BitmapFactory.decodeFile(destFile.getAbsolutePath());
@@ -168,28 +157,28 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         iv.setImageResource(R.drawable.q_mark);
     }
 
-    private List<String> getImgFilesDir1(){
+    private List<String> getDefaultImgFilesDir(){
         List<String> originalName = Arrays.asList("t0", "t1", "t2", "t3", "t4", "t5");
-        //File externalFilesDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        //File[] files = externalFilesDir.listFiles();
         List<String> res = new ArrayList<>();
         res.addAll(originalName);
         res.addAll(originalName);
         Collections.shuffle(res);
-
         return res;
     }
 
     private List<String> getImgFilesDir(ArrayList<String> names){
-        //List<String> originalName = Arrays.asList("t0", "t1", "t2", "t3", "t4", "t5");
-        //File externalFilesDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        //File[] files = externalFilesDir.listFiles();
         List<String> res = new ArrayList<>();
         res.addAll(names);
         res.addAll(names);
         Collections.shuffle(res);
-
         return res;
+    }
+
+    private void initTimer(){
+        timerTextView = findViewById(R.id.timer);
+        timerTextView.setText(String.format("%02d:%02d:%02d", 0, 0, 0));
+        startTime = SystemClock.elapsedRealtime();
+        handler.postDelayed(updateTimerRunnable, 1000);
     }
 
     private final Runnable updateTimerRunnable = new Runnable() {
