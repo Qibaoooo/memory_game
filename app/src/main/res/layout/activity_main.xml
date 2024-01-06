@@ -25,7 +25,7 @@
                 <EditText
                     android:id="@+id/edit_url"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="48dp"
                     android:layout_weight="2"
                     android:hint="@string/url_hint"
                     android:autofillHints="name"
@@ -67,6 +67,12 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/btn_game"/>
+            <Button
+                android:id="@+id/default_game_btn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/btn_default_game"/>
 
         </LinearLayout>
 

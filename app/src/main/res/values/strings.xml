@@ -2,10 +2,12 @@
     <string name="app_name">memory_game</string>
     <string name="btn_fetch">Fetch</string>
     <string name="url_hint">input your url here...</string>
-    <string name="btn_game">Game</string>
+    <string name="btn_game">Start Game</string>
     <string name="btn_restart">Restart</string>
     <string name="matches_text"> %1$d of 6 Matches </string>
     <string name="init_time">00:00:00</string>
     <string name="timer">Time Used</string>
     <string name="attempts"> %1$d Attempts </string>
+    <string name="btn_back"> Back </string>
+    <string name="btn_default_game">Start Game With Default Images</string>
 </resources>
