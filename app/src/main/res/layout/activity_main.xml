@@ -25,7 +25,7 @@
                 <EditText
                     android:id="@+id/edit_url"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="48dp"
                     android:layout_weight="2"
                     android:hint="@string/url_hint"
                     android:autofillHints="name"
@@ -46,9 +46,11 @@
                 android:layout_height="wrap_content" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/progress"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:paddingBottom="10dp">
+                android:paddingBottom="10dp"
+                android:visibility="gone">
 
                 <ProgressBar
                     android:id="@+id/download_bar"
@@ -56,9 +58,22 @@
                     android:layout_width="250dp"
                     android:layout_height="35dp"
                     android:progress="0"
-                    app:layout_constraintBaseline_toTopOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent" />
+
+                <TextView
+                    android:id="@+id/progress_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/progress_text"
+                    android:textSize="16sp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    android:gravity="center"/>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <Button
@@ -67,6 +82,38 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/btn_game"/>
+            <TextView
+                android:layout_marginTop="2dp"
+                android:layout_marginBottom="2dp"
+                android:id="@+id/options"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/options"
+                android:textSize="16sp"
+                android:background="@color/white"
+                android:gravity="center"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <Button
+                    android:layout_marginLeft="2dp"
+                    android:layout_marginRight="2dp"
+                    android:id="@+id/default_game_btn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/btn_default_game"/>
+                <Button
+                    android:layout_marginLeft="2dp"
+                    android:layout_marginRight="2dp"
+                    android:id="@+id/double_game_btn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/btn_double_game"/>
+            </LinearLayout>
 
         </LinearLayout>
 
