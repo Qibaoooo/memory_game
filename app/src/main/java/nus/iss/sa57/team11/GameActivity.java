@@ -124,6 +124,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
 
     private void initGame(){
         scoreTable = findViewById(R.id.scoreTable);
+        turn = findViewById(R.id.turn);
         Intent intent = getIntent();
         isDefault = intent.getBooleanExtra("isDefault",false);
         if(!isDefault) {
@@ -135,6 +136,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         isDouble = intent.getBooleanExtra("isDouble",false);
         if(!isDouble){
             scoreTable.setVisibility(View.GONE);
+            turn.setVisibility(View.GONE);
         } else {
             scoreTable.setVisibility(View.VISIBLE);
             isFirstPlayer = true;
