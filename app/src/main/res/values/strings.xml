@@ -13,4 +13,5 @@
     <string name="btn_double_game">Activate Combat Mode</string>
     <string name="progress_text">0 of 20 images downloaded</string>
     <string name="options">Advanced Settings</string>
+    <string name="start">Start</string>
 </resources>
