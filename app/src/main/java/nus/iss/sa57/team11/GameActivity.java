@@ -39,31 +39,38 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     private int firstClickId;
     private List<Integer> matchedId;//this is for checking click
     private View firstClickedView;
+    private View pausedView;
+    private Button btn_resume;
+    private boolean isDouble;
+    private boolean isFirstPlayer;
+    private View scoreTable;
+    private View turn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
-        Intent intent = getIntent();
-        isDefault = intent.getBooleanExtra("isDefault",false);
-        if(!isDefault) {
-            imgNames = intent.getStringArrayListExtra("imgList");
-            imgPaths = getImgFilesDir(imgNames);//get the list on create because the list is random
-        }else {
-            imgPaths = getDefaultImgFilesDir();
-        }
-        isFirstClick = true;
-        matchedId = new ArrayList<>();
-        setImgHolders();
-        matches = 0;
-        setMatchesText();
-        attempts = 0;
-        setAttemptsText();
-        initTimer();
-        Button restartBtn = findViewById(R.id.reset_btn);
-        restartBtn.setOnClickListener(v -> restart());
-        Button backBtn = findViewById((R.id.back_btn));
-        backBtn.setOnClickListener(v -> finish());
+        initGame();
+        pausedView = findViewById(R.id.pauseView);
+        pausedView.setVisibility(View.VISIBLE);
+        btn_resume = findViewById(R.id.resumeButton);
+        btn_resume.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pausedView.setVisibility(View.GONE);
+                if(isDouble && isFirstPlayer){
+                    TextView timeScore1 = findViewById(R.id.time_1);
+                    timeScore1.setText("0");
+                    TextView attemptScore1 = findViewById(R.id.attempts_1);
+                    attemptScore1.setText("0");
+                    TextView timeScore2 = findViewById(R.id.time_2);
+                    timeScore2.setText("0");
+                    TextView attemptScore2 = findViewById(R.id.attempts_2);
+                    attemptScore2.setText("0");
+                }
+                startGame();
+            }
+        });
     }
 
     @Override
@@ -93,7 +100,12 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
                         v.startAnimation(emphasis);
                         firstClickedView.startAnimation(emphasis);
                         if (matches == 6) {
-                            handler.removeCallbacks(updateTimerRunnable);
+                            pauseTimer();
+                            if(isDouble){
+                                setScore();
+                                isFirstPlayer = !isFirstPlayer;
+                                restart();
+                            }
                         }
                     } else {
                         attempts++;
@@ -108,6 +120,50 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
         setAttemptsText();
+    }
+
+    private void initGame(){
+        scoreTable = findViewById(R.id.scoreTable);
+        Intent intent = getIntent();
+        isDefault = intent.getBooleanExtra("isDefault",false);
+        if(!isDefault) {
+            imgNames = intent.getStringArrayListExtra("imgList");
+            imgPaths = getImgFilesDir(imgNames);//get the list on create because the list is random
+        }else {
+            imgPaths = getDefaultImgFilesDir();
+        }
+        isDouble = intent.getBooleanExtra("isDouble",false);
+        if(!isDouble){
+            scoreTable.setVisibility(View.GONE);
+        } else {
+            scoreTable.setVisibility(View.VISIBLE);
+            isFirstPlayer = true;
+        }
+        setImgHolders();
+        matches = 0;
+        setMatchesText();
+        attempts = 0;
+        setAttemptsText();
+    }
+
+    private void startGame(){
+        if(!isDefault) {
+            imgPaths = getImgFilesDir(imgNames);//get the list on create because the list is random
+        }else {
+            imgPaths = getDefaultImgFilesDir();
+        }
+        resetImgHolders();
+        isFirstClick = true;
+        matchedId = new ArrayList<>();
+        matches = 0;
+        setMatchesText();
+        attempts = 0;
+        setAttemptsText();
+        initTimer();
+        Button restartBtn = findViewById(R.id.reset_btn);
+        restartBtn.setOnClickListener(v -> restart());
+        Button backBtn = findViewById((R.id.back_btn));
+        backBtn.setOnClickListener(v -> finish());
     }
 
     private void setImgHolders(){
@@ -137,6 +193,23 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
                 tr.addView(holder);
             }
             imgTable.addView(tr);
+        }
+    }
+
+    private void resetImgHolders() {
+        TableLayout imgTable = findViewById(R.id.game_img_table);
+        for (int i = 0; i < imgTable.getChildCount(); i++) {
+            View view = imgTable.getChildAt(i);
+            if (view instanceof TableRow) {
+                TableRow tr = (TableRow) view;
+                for (int j = 0; j < tr.getChildCount(); j++) {
+                    View childView = tr.getChildAt(j);
+                    if (childView instanceof ImageView) {
+                        ImageView holder = (ImageView) childView;
+                        holder.setImageResource(R.drawable.q_mark);
+                    }
+                }
+            }
         }
     }
 
@@ -204,17 +277,23 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         }
     };
 
+    private void pauseTimer(){
+        handler.removeCallbacks(updateTimerRunnable);
+    }
+
     private void restart(){
-        Intent intent = new Intent(this, GameActivity.class);
-        if(!isDefault) {
-            intent.putStringArrayListExtra("imgList", new ArrayList<>(imgNames));
-            intent.putExtra("isDefault",false);
-        } else{
-            intent.putStringArrayListExtra("imgList", new ArrayList<>());
-            intent.putExtra("isDefault",true);
+        pauseTimer();
+        pausedView.setVisibility(View.VISIBLE);
+        if(isDouble && isFirstPlayer){
+            TextView turn = findViewById(R.id.turn);
+            turn.setText("Player 1's Turn");
+            btn_resume.setText("Restart Combat");
         }
-        finish();
-        startActivity(intent);
+        if(isDouble && !isFirstPlayer){
+            TextView turn = findViewById(R.id.turn);
+            turn.setText("Player 2's Turn");
+            btn_resume.setText(R.string.start);
+        }
     }
 
     private void setMatchesText(){
@@ -227,4 +306,19 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         attempts.setText(String.format(getString(R.string.attempts), this.attempts));
     }
 
+    private void setScore(){
+        if(isFirstPlayer){
+            TextView timeScore = findViewById(R.id.time_1);
+            timeScore.setText(timerTextView.getText());
+            TextView attemptScore = findViewById(R.id.attempts_1);
+            TextView attempts = findViewById(R.id.attempts);
+            attemptScore.setText(attempts.getText());
+        } else{
+            TextView timeScore = findViewById(R.id.time_2);
+            timeScore.setText(timerTextView.getText());
+            TextView attemptScore = findViewById(R.id.attempts_2);
+            TextView attempts = findViewById(R.id.attempts);
+            attemptScore.setText(attempts.getText());
+        }
+    }
 }
