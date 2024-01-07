@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -208,7 +207,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
          * This is the stackoverflow answer I referred to:
          * https://stackoverflow.com/questions/12575068/how-to-get-the-result-of-onpostexecute-to-main-activity-because-asynctask-is-a
          * */
-        GetIndividualImageUrlsTask task = new GetIndividualImageUrlsTask();
+        DownloadIndividualImagesTask task = new DownloadIndividualImagesTask();
         task.delegate = this;
         task.execute(imgURL);
     }
@@ -222,8 +221,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         allImgUrls = output;
     }
 
-    @SuppressLint("StaticFieldLeak")
-    private class GetIndividualImageUrlsTask extends AsyncTask<String, Void, List<String>> {
+    private class DownloadIndividualImagesTask extends AsyncTask<String, Void, List<String>> {
         public AsyncResponse delegate = null;
 
         @Override
