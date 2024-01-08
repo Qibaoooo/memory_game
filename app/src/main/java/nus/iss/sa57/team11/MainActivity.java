@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private List<ImageView> selectedImageViews;
     private boolean isDefault = false;
     private boolean isDouble = false;
+    private GameSound gameSound;
 
 
     @Override
@@ -54,6 +55,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setupButtons();
         setupURLEditText();
         setupImagePlaceholders();
+
+        gameSound = new GameSound();
     }
 
     @Override
@@ -70,6 +73,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }
                     intent.putStringArrayListExtra("imgList", new ArrayList<>(selected));
                     intent.putExtra("isDouble", isDouble);
+                    gameSound.play(this, GameSounds.START);
                     startActivity(intent);
                 } else {
                     Toast.makeText(this, "Please select 6 images or start with default images!", Toast.LENGTH_SHORT).show();
@@ -77,6 +81,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }else {
                 intent.putExtra("isDefault", true);
                 intent.putExtra("isDouble", isDouble);
+                gameSound.play(this, GameSounds.START);
                 startActivity(intent);
             }
         } else if (v.getId() == R.id.default_game_btn){
