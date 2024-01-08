@@ -45,6 +45,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     private boolean isFirstPlayer;
     private View scoreTable;
     private View turn;
+    private boolean isClickable = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +76,10 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v){
+        if (!isClickable) {
+            return;
+        }
+
         int id = v.getId();
         if(!matchedId.contains(id)) { //avoid first click on revealed img
             if(!isDefault) {
@@ -108,12 +113,14 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
                             }
                         }
                     } else {
+                        isClickable = false;
                         attempts++;
                         Handler handler = new Handler();
                         handler.postDelayed(() -> {
                             setBackground(id);
                             setBackground(firstClickId);
                             isFirstClick = true;
+                            isClickable = true;
                         }, 400);
                     }
                 }
