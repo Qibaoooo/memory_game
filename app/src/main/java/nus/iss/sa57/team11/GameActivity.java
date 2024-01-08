@@ -46,6 +46,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     private View scoreTable;
     private View turn;
     private boolean isClickable = true;
+    private GameSound gameSound;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +71,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
                     attemptScore2.setText("0");
                 }
                 startGame();
+                gameSound = new GameSound();
             }
         });
     }
@@ -100,12 +102,14 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
                         matchedId.add(firstClickId);
                         matches++;
                         attempts++;
+                        gameSound.play(this, GameSounds.GOOD_MATCH);
                         setMatchesText();
                         Animation emphasis = AnimationUtils.loadAnimation(this, R.anim.emphasis);
                         v.startAnimation(emphasis);
                         firstClickedView.startAnimation(emphasis);
                         if (matches == 6) {
                             pauseTimer();
+                            gameSound.play(this, GameSounds.WIN);
                             if(isDouble){
                                 setScore();
                                 isFirstPlayer = !isFirstPlayer;

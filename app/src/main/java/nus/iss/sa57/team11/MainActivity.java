@@ -91,6 +91,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             } else{
                 isDefault = false;
                 default_game_btn.setBackgroundColor(ContextCompat.getColor(this, R.color.btn_default));
+
             }
         } else if (v.getId() == R.id.double_game_btn) {
             if (!isDouble) {
