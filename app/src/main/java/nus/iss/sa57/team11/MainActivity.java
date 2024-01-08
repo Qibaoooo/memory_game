@@ -73,7 +73,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }
                     intent.putStringArrayListExtra("imgList", new ArrayList<>(selected));
                     intent.putExtra("isDouble", isDouble);
-                    gameSound.play(this, GameSounds.START);
                     startActivity(intent);
                 } else {
                     Toast.makeText(this, "Please select 6 images or start with default images!", Toast.LENGTH_SHORT).show();

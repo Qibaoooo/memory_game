@@ -53,6 +53,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
         initGame();
+        gameSound = new GameSound();
         pausedView = findViewById(R.id.pauseView);
         pausedView.setVisibility(View.VISIBLE);
         btn_resume = findViewById(R.id.resumeButton);
@@ -71,7 +72,6 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
                     attemptScore2.setText("0");
                 }
                 startGame();
-                gameSound = new GameSound();
             }
         });
     }
@@ -157,6 +157,10 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         setMatchesText();
         attempts = 0;
         setAttemptsText();
+        Button restartBtn = findViewById(R.id.reset_btn);
+        restartBtn.setOnClickListener(v -> restart());
+        Button backBtn = findViewById((R.id.back_btn));
+        backBtn.setOnClickListener(v -> finish());
     }
 
     private void startGame(){
@@ -173,10 +177,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         attempts = 0;
         setAttemptsText();
         initTimer();
-        Button restartBtn = findViewById(R.id.reset_btn);
-        restartBtn.setOnClickListener(v -> restart());
-        Button backBtn = findViewById((R.id.back_btn));
-        backBtn.setOnClickListener(v -> finish());
+        gameSound.play(this, GameSounds.START);
     }
 
     private void setImgHolders(){
