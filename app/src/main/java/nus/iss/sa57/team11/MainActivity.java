@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private List<ImageView> selectedImageViews;
     private boolean isDefault = false;
     private boolean isDouble = false;
+    private List<Thread> imageDLThreads;
     private GameSound gameSound;
 
 
@@ -50,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // init fields
         this.imageViews = new ArrayList<ImageView>();
         this.selectedImageViews = new ArrayList<ImageView>();
+        this.imageDLThreads = new ArrayList<Thread>();
 
         // init UI
         setupButtons();
@@ -258,6 +260,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
              * we update UI.
              * The 20 downloads are executed in parallel.
              * */
+            for (Thread t: imageDLThreads
+                 ) {
+                if (t != null) {
+                    t.interrupt();
+                }
+            }
+            imageDLThreads.removeAll(imageDLThreads);
             for (int i = 0; i < 5; i++) {
                 for (int j = 0; j < 4; j++) {
                     downloadImageAndUpdateUI(externalFilesDir, result, i, j);
@@ -289,7 +298,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void downloadImageAndUpdateUI(File externalFilesDir, List<String> allImageUrls, int i, int j) {
         ImageDownloader imgDL = new ImageDownloader();
         String url = allImageUrls.get(i * 4 + j);
-        new Thread(() -> {
+        Thread t = new Thread(() -> {
             File destFile = new File(externalFilesDir, ("img-" + String.valueOf(i*4+j)));
             TableLayout imgTable = findViewById(R.id.img_table);
             if (imgDL.downloadImage(url, destFile)) {
@@ -307,7 +316,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     pt.setText(progress + " of 20 images downloaded");
                 });
             }
-        }).start();
+        });
+        imageDLThreads.add(t);
+        t.start();
     }
 
 
