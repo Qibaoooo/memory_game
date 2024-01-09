@@ -240,6 +240,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             delegate.processFinish(result);
             File externalFilesDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
             /*
+            * First check if we have gotten 20 img urls. If not we
+            * ask user to change the url.
+            * */
+            if (result.size() < 20) {
+                runOnUiThread(()->{
+                    Toast.makeText(getApplicationContext(),
+                            "Not enough images detected from this URL. Please use another one.",
+                            Toast.LENGTH_SHORT).show();
+                });
+                return;
+            }
+
+            /*
              * Here we have gotten 20 img urls.
              * Now we loop around the 20 img, after downloading each one,
              * we update UI.
